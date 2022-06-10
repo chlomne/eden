@@ -28,8 +28,10 @@ async function serveAsset(event) {
   let response = await cache.match(event.request);
 
   if (!response) {
+    const bypass = !!url.searchParams.get('bypass');
+
     const headers = { 'cache-control': 'public, max-age=14400', 'content-type': 'text/html' };
-    if (userAgent === DISCORD_UA) {
+    if (userAgent === DISCORD_UA && !bypass) {
       response = new Response(HTML(`${BUCKET_URL}${url.pathname}`, url.pathname), { ...response, headers });
     } else {
       response = await fetch(`${BUCKET_URL}${url.pathname}`);
